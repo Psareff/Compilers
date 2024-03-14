@@ -1,0 +1,17 @@
+op = (int x) -> { x + 2 };
+
+
+<DEF> -> (letter) <IDENT>
+<IDENT> -> (letter|digit) <IDENT_REM>
+
+<IDENT_REM> -> '=' <OPEN_PAREN>
+
+<OPEN_PAREN> -> '(' <KEYWORD>
+
+<KEYWORD> -> (int|string|char) <IDENT>
+
+<IDENT> -> (letter|digit) <IDENT_REM>
+<IDENT_REM> -> ')' <CLOSE_PAREN>
+<CLOSE_PAREN> -> '->' <OPEN_BRACE>
+<OPEN_BRACE> -> (letter) <IDENT>
+
