@@ -5,7 +5,7 @@
 
 typedef enum token_type
 {
-	IDENT, KEYWORD, OPERATION, PAREN, BRACE, INVALID, WHITESPACE, NUMBER, EQUALS, ASSIGNMENT, COMMA, SEMICOLON
+	IDENT, KEYWORD, OPERATION, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE, INVALID, WHITESPACE, NUMBER, EQUALS, ASSIGNMENT, COMMA, SEMICOLON
 } token_type_e;
 
 typedef enum errors
@@ -13,7 +13,7 @@ typedef enum errors
 	NO_ERR, INFO, LOG, ALARM, CRITICAL
 }errors_t;
 
-#define KEYWORDS_COUNT 8
+#define KEYWORDS_COUNT 9
 
 #define IS_KEYWORD(token) \
 	{ \
@@ -34,10 +34,14 @@ switch(type) \
 			return "KEYWORD"; \
 		case OPERATION: \
 			return "OPERATION"; \
-		case PAREN: \
-			return "PAREN"; \
-		case BRACE: \
-			return "BRACE"; \
+		case OPEN_PAREN: \
+			return "OPEN_PAREN"; \
+		case CLOSE_PAREN: \
+			return "CLOSE_PAREN"; \
+		case OPEN_BRACE: \
+			return "OPEN_BRACE"; \
+		case CLOSE_BRACE: \
+			return "CLOSE_BRACE"; \
 		case INVALID: \
 			return "INVALID"; \
 		case WHITESPACE: \

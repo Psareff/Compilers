@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+#include "parser.h"
 #include <gtk/gtk.h>
 
 char* keywords[KEYWORDS_COUNT] = {
-	"byte", "short", "int", "long", "float", "double", "boolean", "char"
+	"byte", "short", "int", "long", "float", "double", "boolean", "char", "Operation"
 };
 
 static char *type_to_str(token_type_e type)
@@ -47,7 +48,8 @@ token_t *tokenize(const char *expr, int *count)
 			case 65 ... 90:
 			case 97 ... 122:
 				while (*expr >= 65 && *expr <= 90 ||
-				       *expr >= 97 && *expr <= 122)
+				       *expr >= 97 && *expr <= 122 ||
+				       *expr >= 48 && *expr <= 57)
 				{
 					expr++;
 					lexeme_end++;
@@ -57,9 +59,9 @@ token_t *tokenize(const char *expr, int *count)
 				type = IDENT;
 				break;
 			case ' ':
-			case '\t':
-			case '\n':
 			case '\0':
+			case '\n':
+			case '\t':
 				type = WHITESPACE;
 				break;
 			case 48 ... 57:
@@ -96,12 +98,16 @@ number_recognition:
 				lexeme_end++;
 				break;
 			case '(':
+				type = OPEN_PAREN;
+				break;
 			case ')':
-				type = PAREN;
+				type = CLOSE_PAREN;
 				break;
 			case '{':
+				type = OPEN_BRACE;
+				break;
 			case '}':
-				type = BRACE;
+				type = CLOSE_BRACE;
 				break;
 			case ',':
 				type = COMMA;
@@ -110,16 +116,31 @@ number_recognition:
 				type = SEMICOLON;
 				break;
 			default:
+				type = INVALID;
 				goto emergency_exit;
 		}
 
 		token_t *t = create_token(buffer, lexeme_start, lexeme_end, type);
 		memcpy(&tokens[*count], t, sizeof(token_t));
-		free(t);
 		*count = *count + 1;
 		tokens = realloc(tokens, sizeof(token_t) * (*count + 1));
 		lexeme_end++;
 	}
+	for (int i = 0; i < *count; i++)
+	g_print(token_stringize(tokens[i]));
+/*
+	parser_t parser;
+	parser.state = INVALID;
+	int is_error = 0;
+	for (int i = 0; i < *count; i++)
+	{
+		is_error = 0;
+		parse(&parser, tokens[i], &is_error);
+		if (is_error)
+			printf(token_stringize(tokens[i]));
+	}
+
+*/
 	return tokens;
 
 emergency_exit:
@@ -132,13 +153,15 @@ emergency_exit:
 
 static char *token_stringize(token_t token)
 {
-	int count = snprintf(NULL, 0, "%20s | %4d - %4d | %20s", token.lexeme, 
+	int count = snprintf(NULL, 0, "%20s | %4d - %4d | %20s\n", token.lexeme, 
 	                                                   token.lexeme_start, 
 	                                                   token.lexeme_end, 
 	                                                   type_to_str(token.type));
 	
 	char *buff = malloc(count + 1);
-	snprintf(buff, count + 1, "%20s | %4d - %4d | %20s", token.lexeme,
+
+
+	snprintf(buff, count + 1, "%20s | %4d - %4d | %20s\n", token.lexeme,
 	                                       token.lexeme_start,
 	                                       token.lexeme_end,
 	                                       type_to_str(token.type));
@@ -163,20 +186,19 @@ char *expr_to_tokens_str(char *expr)
 	if (count == -1 || count == 0)
 		return NULL;
 
-	char *ch;
 	for(int i = 0; i < count; i++)
 	{
-		ch = token_stringize(tokens[i]); 
+		char *ch = token_stringize(tokens[i]); 
 		fin_len += strlen(ch);
 	}
-	token_str = malloc(fin_len + 1);
+	token_str = malloc(fin_len) + 1;
 
 	int pos = 0;
 	for(int i = 0; i < count; i++)
 	{
-		ch = token_stringize(tokens[i]); 
-		pos += sprintf(&token_str[pos], "%s\n", ch);
+		char *ch = token_stringize(tokens[i]); 
+		pos += sprintf(&token_str[pos], "%s", ch);
 	}
-	//return token_stringize(tokens[0]);
+	free(tokens);
 	return token_str;
 }

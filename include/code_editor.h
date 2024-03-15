@@ -21,7 +21,7 @@ typedef struct code_editor
 
 	FILE *fp;
 	char is_saved;
-	code_editor_textview_t code,
+	code_editor_textview_t code_view,
 			       analysis;
 	
 	char *copied_text;	
@@ -39,7 +39,6 @@ const lexeme_color_t colors[LEXEME_COLORS_COUNT] =
 {
 	#include "lexeme_colors.h"
 };
-
 
 #define LSHIFT (1 << 0)
 #define RSHIFT (1 << 1)
