@@ -1,11 +1,29 @@
-op = (int x) -> { x + 2 };
+Operation op = (int x) -> { x + 2 };
 
+<DEF> -> 'Operation' <OPER_ID>
+<OPER_ID> -> word <EQUALS>
+<EQUALS> -> '(' <OPEN_PAREN>
+<OPEN_PAREN> -> keyword <KEYWORD>
+<OPEN_PAREN> -> word <PARAMS_ID>
+<PARAMS_ID> -> ',' <COMMA>
+<PARAMS_ID> -> ')' <CLOSE_PAREN>
+<OPEN_PAREN> -> ')' <CLOSE_PAREN>
+<CLOSE_PAREN> -> '->' <ASSIGNMENT>
+<ASSIGNMENT> -> word <IDENT>
+<ASSIGNMENT> -> '{' <OPEN_BRACE>
+<ASSIGNMENT> -> number <NUMBER>
+<IDENT> -> operation <OPERATION>
+<NUMBER> -> operation <OPERATION>
+<OPERATION> -> number <NUMBER> 
+<OPERATION> -> word <IDENT>
+<NUMBER> -> '}' <CLOSE_BRACE>
+<IDENT> -> '}' <CLOSE_BRACE>
+<NUMBER> -> ';' <SEMICOLON>
+<IDENT> -> ';' <SEMICOLON>
+<CLOSE_BRACE> -> ';' <SEMICOLON>
+<SEMICOLON> -> ;
 
-<DEF> -> (letter) <IDENT>
-<IDENT> -> '=' <OPEN_PAREN>
-<OPEN_PAREN> -> '(' <KEYWORD>
-<KEYWORD> -> (int|string|char) <IDENT>
-<IDENT> -> ')' <CLOSE_PAREN>
-<IDENT> -> ',' <KEYWORD>
-
-
+number = [+-]?([0-9]+)(.?)([0-9]*)
+word = [A-Za-z]([A-Za-z0-9]*)
+keyword = (short|int|long|float|double|boolean|char)
+operation = [+-*/] 

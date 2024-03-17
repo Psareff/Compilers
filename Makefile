@@ -13,12 +13,12 @@ LDLIBS=$(patsubst $(LDDIR)%.c, $(OUTDIR)/%.so, $(SRCS))
 INCLUDE=-Iinclude
 
 $(OUTDIR)/%.o : $(SRCDIR)/%.c Makefile
-	$(CC) -c $< $(INCLUDE) $(CFLAGS) -o $@ $(LDFLAGS)
+	$(CC) -DRELEASE -DLEX_DBG -c $< $(INCLUDE) $(CFLAGS) -o $@ $(LDFLAGS)
 
 PROJ_NAME=codEditor
 
 all: $(OBJS) 
-	$(CC) $^ $(CFLAGS) -o $(PROJ_NAME) $(LDFLAGS)
+	$(CC) $^ $(CFLAGS) -o  $(PROJ_NAME) $(LDFLAGS)
 
 configure:
 	mkdir out

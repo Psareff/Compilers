@@ -1,8 +1,10 @@
+#include "parser.h"
+#include <gtk/gtk.h>
+#include "dynamic_fonts.h"
+
 #ifndef CODE_EDITOR_H_
 #define CODE_EDITOR_H_
 
-#include <gtk/gtk.h>
-#include "dynamic_fonts.h"
 
 typedef struct code_editor_textview
 {

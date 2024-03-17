@@ -307,7 +307,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTextView" id="analysis_view">
+              <object class="GtkTextView" id="analysis">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
               </object>
