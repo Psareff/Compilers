@@ -15,7 +15,7 @@
 			} \
 	}
 	
-token_t *create_token(const char *expr, int start, int end, token_type_e type)
+token_t *create_token(const char *expr, int start, int end, enum token_type_e type)
 {
 	token_t *tok = malloc(sizeof(token_t));
 	tok->start = start;
@@ -26,7 +26,7 @@ token_t *create_token(const char *expr, int start, int end, token_type_e type)
 	return tok;
 }
 
-char *token_type_to_str(token_type_e type)
+char *token_type_to_str(enum token_type_e type)
 {
 	TOKEN_TYPE_TO_STR(type);
 }
@@ -66,7 +66,7 @@ int tokenize (const char *expr, list_t **tokens)
 	    end = 0;
 	int count = 0;
 
-	token_type_e type = INVALID;
+	enum token_type_e type = INVALID;
 
 	for (; *buffer != '\0'; buffer++)
 	{

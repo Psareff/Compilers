@@ -71,7 +71,7 @@ static void code_text_buffer_changed(GtkWidget *widget, GdkEventKey *event)
 #endif
 }
 
-void autocomplete();
+int autocomplete();
 
 static gboolean code_key_pressed(GtkWidget *widget, GdkEventKey *event)
 {
@@ -99,30 +99,68 @@ static gboolean code_key_pressed(GtkWidget *widget, GdkEventKey *event)
 			gtk_text_buffer_get_bounds(editor.code_view.buffer, &editor.code_view.start, &editor.code_view.end);
 			char *text = gtk_text_buffer_get_text(editor.code_view.buffer, &editor.code_view.start, &editor.code_view.end, TRUE);
 			int ret = tokenize(text, &editor.tokens);
+			if (ret != 0)
+			{
 			editor.tokens_bak = editor.tokens;
-			autocomplete();
+			int min = autocomplete();
+			editor.tokens = editor.tokens_bak;
+			
+			token_t *tok;
+			
+			while (editor.tokens != NULL)
+			{
+				tok = (token_t *)editor.tokens->data; 
+				editor.tokens = editor.tokens->next;
+			}
+			g_print("%s[%d] -> %s[%d]\n", tok->value, tok->end - tok->start, keywords_list[min], strlen(keywords_list[min]));
+			strcpy(text + tok->start, keywords_list[min]);
+			gtk_text_buffer_set_text(editor.code_view.buffer, text, strlen(text));
+			
+			}
+			 
 			return TRUE;
 	}
 	return FALSE;
 }
 
-void autocomplete()
+int abs(int val)
 {
+	return val < 0 ? -val : val;
+}
+
+double smart_compare(char *ch1, char *ch2)
+{
+	double diff = 0;
+	if(strlen(ch1) > strlen(ch2))
+		return -1;
+
+	double first_round_inc = strlen(ch1)*0.1 + strlen(ch2) * 10;
+	for (; *ch1 != '\0', *ch2 != '\0'; ch1++, ch2++, first_round_inc /= 5.0)
+		if (*ch1 != *ch2)
+			diff += first_round_inc;
+	return diff;
+}
+
+int autocomplete()
+{
+	double comparisons[KEYWORDS_COUNT];
 	while (editor.tokens != NULL)
 	{
-		if (editor.tokens->next == NULL)
-		{
-			g_print("tokens->last=%s\n", ((token_t *)editor.tokens->data)->value);
-			for (int i = 0; i < KEYWORDS_COUNT; i++)
-			{
-				g_print("comp(%s, %s)=%d\n", ((token_t *)editor.tokens->data)->value, keywords_list[i], 
-						strcmp(((token_t *)editor.tokens->data)->value, keywords_list[i]));
-			}
-			
-		}
+		for (int i = 0; i < KEYWORDS_COUNT; i++)
+			comparisons[i] = smart_compare(((token_t *)editor.tokens->data)->value, keywords_list[i]);
 		editor.tokens = editor.tokens->next;
 	}
-	
+	int min = 0;
+	double best_comparison = comparisons[KEYWORDS_COUNT - 1];
+	for (int i = 0; i < KEYWORDS_COUNT; i++)
+	{
+		if(comparisons[i] < comparisons[min] && comparisons[i] != -1)
+			min = i;
+		//g_print("comp=%f\n", comparisons[i]);
+	}
+	return min;
+	//g_print("best=%d, %s\n", min, keywords_list[min]);
+
 }
 
 int main(int argc, char **argv)
