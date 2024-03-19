@@ -1,10 +1,9 @@
-#include "parser.h"
 #include <gtk/gtk.h>
+#include "parser.h"
 #include "dynamic_fonts.h"
 
 #ifndef CODE_EDITOR_H_
 #define CODE_EDITOR_H_
-
 
 typedef struct code_editor_textview
 {
@@ -25,8 +24,8 @@ typedef struct code_editor
 	char is_saved;
 	code_editor_textview_t code_view,
 			       analysis;
-	
-	char *copied_text;	
+	list_t *tokens, *tokens_bak;
+	char *copied_text;
 } code_editor_t;
 
 typedef struct lexeme_color
@@ -54,7 +53,7 @@ char current_modifier_condition = 0x0;
 #define MODIFIER_ACTION(modifier, action) \
 { \
 	if (action) current_modifier_condition |= modifier; \
-	else current_modifier_condition &= !modifier \
+	else current_modifier_condition &= !modifier; \
 } 
 
 #endif // CODE_EDITOR_H_

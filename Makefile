@@ -13,7 +13,7 @@ LDLIBS=$(patsubst $(LDDIR)%.c, $(OUTDIR)/%.so, $(SRCS))
 INCLUDE=-Iinclude
 
 $(OUTDIR)/%.o : $(SRCDIR)/%.c Makefile
-	$(CC) -DRELEASE -DLEX_DBG -c $< $(INCLUDE) $(CFLAGS) -o $@ $(LDFLAGS)
+	$(CC) -DRELEASE -DLEX_DB -c $< $(INCLUDE) $(CFLAGS) -o $@ $(LDFLAGS)
 
 PROJ_NAME=codEditor
 

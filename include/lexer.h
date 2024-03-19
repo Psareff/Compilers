@@ -3,6 +3,12 @@
 #ifndef LEXER_H_
 #define LEXER_H_
 
+#define KEYWORDS_COUNT 8
+
+const char* keywords_list[KEYWORDS_COUNT] = {
+	"Operation", "short", "int", "long", "float", "double", "boolean", "char"
+};
+
 typedef enum token_type 
 { 
 	KEYWORD, 

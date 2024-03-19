@@ -1,24 +1,18 @@
 #include "lexer.h"
-#include "list.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <gtk/gtk.h>
 
-#define KEYWORDS_COUNT 8
-
-const char* keywords_list[KEYWORDS_COUNT] = {
-	"Operation", "short", "int", "long", "float", "double", "boolean", "char"
-};
-
-#define IS_KEYWORD(token) \
+#define IS_KEYWORD(expr, tok) \
 	{ \
-		printf("%s\n", token->value); \
-		if (memcmp(token->value, "Operation", strlen(token->value)) == 0) \
-		{ \
-			token->type = KEYWORD; \
-		} \
+		for (int i = 0; i < KEYWORDS_COUNT; i++) \
+			if (!strcmp(expr, keywords_list[i])) \
+			{ \
+				tok->type = KEYWORD; \
+				break; \
+			} \
 	}
 	
 token_t *create_token(const char *expr, int start, int end, token_type_e type)
@@ -28,7 +22,8 @@ token_t *create_token(const char *expr, int start, int end, token_type_e type)
 	tok->end = end;
 	tok->value = expr;
 	tok->type = type;
-	//IS_KEYWORD(tok);
+	IS_KEYWORD(expr, tok);
+	return tok;
 }
 
 char *token_type_to_str(token_type_e type)
@@ -118,6 +113,9 @@ number_recognition:
 			case '=':
 				type = EQUALS;
 				break;
+			case ',':
+				type = COMMA;
+				break;
 			case '-':
 				buffer++;
 				switch (*buffer)
@@ -127,6 +125,7 @@ number_recognition:
 						end++;
 						break;
 					case '0' ... '9':
+						end++;
 						goto number_recognition;
 					default:
 						type = OPERATION;
@@ -157,7 +156,9 @@ number_recognition:
 		token_t *tok = create_token(token_value, start, end, type);
 		goto non_newline;
 newline:
-		tok = create_token("\\n", start, end, type);
+		token_value = malloc(strlen("\\n") + 1);
+		memcpy(token_value, "\\n\0", 3);
+		tok = create_token(token_value, start, end + 1, type);
 non_newline:
 		*tokens = push(*tokens, tok);
 		count++;
@@ -174,12 +175,10 @@ char *token_collection_to_str(list_t **tokens)
 {
 	if (*tokens == NULL)
 		return "";
-
-	char *token_collection_str = malloc(10240);
-	for (int i = 0; i < 10240; i++)
-	{
+	#define MAX_TOKEN_COLLECTION_LEN 10240
+	char *token_collection_str = malloc(MAX_TOKEN_COLLECTION_LEN);
+	for (int i = 0; i < MAX_TOKEN_COLLECTION_LEN; i++)
 		token_collection_str[i] = 0;
-	}
 	while (*tokens != NULL)
 
 	{
@@ -192,7 +191,6 @@ char *token_collection_to_str(list_t **tokens)
 				strlen(token_collection_str) + strlen(tok_str));
 		strcpy(token_collection_str + strlen(token_collection_str), tok_str);
 */
-		g_print("%s\n", token_collection_str);
 		free(tok_str);
 		*tokens = (*tokens)->next;
 	}
