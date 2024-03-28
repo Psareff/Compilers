@@ -1,0 +1,10 @@
+wc
+src
+include
+Makefile
+antlr
+grammar
+resources
+tests
+LICENSE
+README.md

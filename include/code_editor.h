@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "trie.h"
 #include "parser.h"
 #include "dynamic_fonts.h"
 

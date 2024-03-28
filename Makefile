@@ -21,10 +21,10 @@ all: $(OBJS)
 	$(CC) $^ $(CFLAGS) -o  $(PROJ_NAME) $(LDFLAGS)
 
 configure:
-	mkdir out
-	mkdir shared
+	mkdir -p out
+	mkdir -p shared
 
 clean:
-	rm -rf out/* && rm -f $(PROJ_NAME)
-	rmdir out shared
+	rm -rf out/* 2> /dev/null && rm -f $(PROJ_NAME) 2> /dev/null
+	rmdir out shared 2> /dev/null
 

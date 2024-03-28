@@ -60,7 +60,6 @@ static void code_text_buffer_changed(GtkWidget *widget, GdkEventKey *event)
 	parser.state = STATE_INVALID;
 	editor.tokens = editor.tokens_bak;
 	int error = 0;
-	
 	while (editor.tokens != NULL)
 	{
 		parse(&parser, *((token_t *)editor.tokens->data), &error);
@@ -101,21 +100,20 @@ static gboolean code_key_pressed(GtkWidget *widget, GdkEventKey *event)
 			int ret = tokenize(text, &editor.tokens);
 			if (ret != 0)
 			{
-			editor.tokens_bak = editor.tokens;
-			int min = autocomplete();
-			editor.tokens = editor.tokens_bak;
-			
-			token_t *tok;
-			
-			while (editor.tokens != NULL)
-			{
-				tok = (token_t *)editor.tokens->data; 
-				editor.tokens = editor.tokens->next;
-			}
-			g_print("%s[%d] -> %s[%d]\n", tok->value, tok->end - tok->start, keywords_list[min], strlen(keywords_list[min]));
-			strcpy(text + tok->start, keywords_list[min]);
-			gtk_text_buffer_set_text(editor.code_view.buffer, text, strlen(text));
-			
+				editor.tokens_bak = editor.tokens;
+
+				int min = autocomplete();
+				token_t *tok;
+				editor.tokens = editor.tokens_bak;
+				
+				while (editor.tokens != NULL)
+				{
+					tok = (token_t *)editor.tokens->data; 
+					editor.tokens = editor.tokens->next;
+				}
+				strcpy(text + tok->start, keywords_list[min]);
+				gtk_text_buffer_set_text(editor.code_view.buffer, text, strlen(text));
+
 			}
 			 
 			return TRUE;
@@ -128,17 +126,30 @@ int abs(int val)
 	return val < 0 ? -val : val;
 }
 
+char *to_lower(char *word)
+{
+  char *lower = malloc(strlen(word) + 1);
+  strcpy(lower, word);
+  
+  for (int i = 0; i < strlen(lower); i++)
+    lower[i] = lower[i] >=  'A' && lower[i] <= 'Z' ? lower[i] + 32 : lower[i];
+
+  return lower;
+}
 double smart_compare(char *ch1, char *ch2)
 {
-	double diff = 0;
-	if(strlen(ch1) > strlen(ch2))
-		return -1;
+  double diff = 0;
+  g_print("%s-%s, ", ch1, ch2);
+  ch1 = to_lower(ch1);
+  ch2 = to_lower(ch2);
+  if(strlen(ch1) > strlen(ch2))
+    return -1;
 
-	double first_round_inc = strlen(ch1)*0.1 + strlen(ch2) * 10;
-	for (; *ch1 != '\0', *ch2 != '\0'; ch1++, ch2++, first_round_inc /= 5.0)
-		if (*ch1 != *ch2)
-			diff += first_round_inc;
-	return diff;
+  double first_round_inc = strlen(ch1) + strlen(ch2) * 2;
+  for (; *ch1 != '\0', *ch2 != '\0'; ch1++, ch2++, first_round_inc /= 5.0)
+    if (*ch1 != *ch2)
+      diff += first_round_inc;
+  return diff;
 }
 
 int autocomplete()

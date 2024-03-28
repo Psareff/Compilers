@@ -1,10 +1,10 @@
 #ifndef TOKEN_TYPE_H_
 #define TOKEN_TYPE_H_
 
-#define KEYWORDS_COUNT 8
+#define KEYWORDS_COUNT 9
 
 static const char* keywords_list[KEYWORDS_COUNT] = {
-	"Operation", "short", "int", "long", "float", "double", "boolean", "char"
+	"Operation", "short", "int", "long", "float", "double", "boolean", "char", "string"
 };
 
 static enum token_type_e
